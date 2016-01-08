@@ -5,6 +5,7 @@ var SQLite = require('react-native-sqlite');
 var TaskList = require('./source/components/TaskList');
 var AddTask  = require('./source/components/AddTask');
 //var HelloWrold = require('/HelloWrold');
+var TaskStore = require('./source/stores/TaskStore');
 
 var {
   StyleSheet,
@@ -30,12 +31,12 @@ var styles = StyleSheet.create({
 class HelloWrold extends Component {
   render() {
     return (<View style={styles.text}>
-            <Text>!@#$%Y^%$#@!SDFDSADSDFDSS</Text>
-          </View>);
+      <Text>!@#$%Y^%$#@!SDFDSADSDFDSS</Text>
+      </View>);
   }
 }
 class MemoryMagicProjectApp extends Component {
-  
+
   componentDidMount() {
     this._loadInitialState().done();
   }
@@ -43,39 +44,18 @@ class MemoryMagicProjectApp extends Component {
   async _loadInitialState() {
     try {
       var trace = await AsyncStorage.getItem(TRACE_KEY);
-      if (trace == null) {
-        console.log("value !== null value: ", trace);
-      } else {
+      if (trace === null) {
         console.log("value === null");
-        await AsyncStorage.setItem(TRACE_KEY, "*");
-        console.log("set item: yes");
         this.createTable();
+        await AsyncStorage.setItem(TRACE_KEY, "*");
       }
     } catch (error) {
       console.log("error: ", error);
     }
   }
 
-  getInitialState() {
-
-  }
-
- createTable() {
-    console.log("create table");
-
-    var database = SQLite.open("tasks.sqlite");
-    database.executeSQL("CREATE TABLE IF NOT EXISTS Task (taskId INTEGER PRIMARY KEY AUTOINCREMENT, taskTitle TEXT)", 
-      [],
-      (data) => {
-        console.log("data: ", data);
-      },
-      (error) => {
-        if (error !== null) {
-          console.error("error: ", error);
-        } else {
-          console.log("create table success!");
-        }
-      });
+  createTable() {
+    TaskStore.createTable();
   }
 
   addedTaskSuccess() {
@@ -85,23 +65,24 @@ class MemoryMagicProjectApp extends Component {
 
   render() {
     return (
-        <NavigatorIOS
-          ref='nav'
-          style={styles.container}
-          initialRoute={{
-            title: 'Property Finder',
-            rightButtonTitle: 'new',
-            component: TaskList,
-            onRightButtonPress: () => {
-              this.refs.nav.push({ 
-                title: 'Add Task',
-                component: AddTask,
-                passProps: {
-                  onChanged: this._onChange,
-                } });
-            }
-          }} />
-    );
+      <NavigatorIOS
+      ref='nav'
+      style={styles.container}
+      initialRoute={{
+        title: 'Memory Magic',
+        rightButtonTitle: 'New',
+        component: TaskList,
+        onRightButtonPress: () => {
+          this.refs.nav.push({ 
+            title: 'Add Task',
+            component: AddTask,
+            //rightButtonTitle: 'Save',
+            passProps: {
+              onChanged: this._onChange,
+            } });
+        }
+      }} />
+      );
   }
 }
 
