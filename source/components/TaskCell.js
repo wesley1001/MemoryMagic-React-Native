@@ -53,6 +53,7 @@ class TaskCell extends Component {
 	}
 
 	render() {
+		//console.log('cell: ' + this.props.data.taskId + ': ' + this.props.data.taskTitle);
 		return (
 			<TouchableHighlight 
 			onPress={(rowID, rowData) => this._pressRow(rowID, rowData)}

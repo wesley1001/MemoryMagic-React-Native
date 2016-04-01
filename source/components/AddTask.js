@@ -7,6 +7,7 @@ var SQLite = require('react-native-sqlite');
 var database = SQLite.open("tasks.sqlite");
 var TaskList = require('./TaskList');
 var TaskActions = require('../actions/TaskActions');
+var ButtonStore = require('../stores/ButtonStore');
 
 var {
 	StyleSheet,
@@ -42,7 +43,7 @@ var styles = StyleSheet.create({
 		borderWidth: 0,
 		borderColor: 'lightgray',
 		borderRadius: 0,
-		color: '#48bbec',
+		color: 'black',
 		alignSelf: 'stretch',
 		flex: 1,
 		height: 30
@@ -61,33 +62,28 @@ var styles = StyleSheet.create({
 		flex: 1, //3
 		alignSelf: 'stretch',
 		justifyContent: 'center'
-	},
-	saveButton: {
-		height: 49, 
-		backgroundColor: '#42e47e',
-		marginLeft: 20,
-		marginRight: 20,
-		marginBottom: 0,
-		justifyContent: 'center',
-		alignSelf: 'stretch'
-	},
-	buttonText: {
-		alignSelf: 'center',
-		fontSize: 18,
-		color: 'white'
 	}
 });
+	var i = 0
 
 class AddTask extends Component {
 	
 	constructor(props) {
 		super(props);
+		ButtonStore.addChangeListener('save', this._onSaveButtonPressed.bind(this));
+
 		this.state = {
 			titleString: ''
 		};
 	}
+
+	componentWillUnmount() {
+		ButtonStore.removeChangeListener('save', this._onSaveButtonPressed);
+	}
+
+	componentDidMount() {
+	}
 	
-			
 	render() {
 		return (
 			<View style={styles.container}>
@@ -101,16 +97,9 @@ class AddTask extends Component {
 			onChange={this.onTitleTextChanged.bind(this)} 
 			onKeyPress={this.onKeyPress}
 			blurOnSubmit={true}
-			placeholder='Please enter the title'
+			placeholder='输入任务名称'
 			autoGrow={true}
 			multiline={true} />
-			</View>
-			
-			<View style={styles.saveButtonContainer}>
-			<TouchableHighlight underlayColor='#dddddd' style={styles.saveButton}
-			onPress={this.onSaveButtonPressed.bind(this)}>
-			<Text style={styles.buttonText}>Save</Text>
-			</TouchableHighlight>
 			</View>
 			</View>
 			);
@@ -168,11 +157,10 @@ class AddTask extends Component {
 		console.log(event);
 	}
 
-	onSaveButtonPressed(event) {
-		console.log('onSaveButtonPressed');
-
+	_onSaveButtonPressed(event) {
+		console.log('onSaveButtonPressed ' + i);
+		i += 1;
 		TaskActions.create(this.state.titleString);
-
 		this.props.navigator.pop();
 	}
 

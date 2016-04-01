@@ -9,6 +9,13 @@ var TaskActionCreators = {
 		};
 
 		AppDispatcher.dispatch(action);
+	},
+	delete: function(task) {
+		var action = {
+			type: 'delete_task',
+			task: task
+		};
+		AppDispatcher.dispatch(action);
 	}
 };
 
