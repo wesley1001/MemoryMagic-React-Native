@@ -11,11 +11,14 @@
 
 #import "RCTRootView.h"
 #import "RCTPushNotificationManager.h"
+#import "RNQuickActionManager.h"
+
 
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+  [[UIView appearance] setTintColor:[UIColor colorWithRed:50/255.0 green:180/255.0 blue:180/255.0 alpha:1.0]];
   NSURL *jsCodeLocation;
 
   /**
@@ -31,9 +34,9 @@
    * `inet` value under `en0:`) and make sure your computer and iOS device are
    * on the same Wi-Fi network.
    */
-  jsCodeLocation = [NSURL URLWithString:@"http://localhost:8081/index.ios.bundle?platform=ios&dev=true"];
+  //jsCodeLocation = [NSURL URLWithString:@"http://localhost:8081/index.ios.bundle?platform=ios&dev=true"];
 
-//  jsCodeLocation = [NSURL URLWithString:@"http://10.180.9.103:8081/index.ios.bundle?platform=ios&dev=true"];
+  jsCodeLocation = [NSURL URLWithString:@"http://10.180.10.80:8081/index.ios.bundle?platform=ios&dev=true"];
 
   // Step 1:
   //jsCodeLocation = [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
@@ -48,7 +51,7 @@
    * simulator in the "Release" build configuration.
    */
 
-//   jsCodeLocation = [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
+ //  jsCodeLocation = [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
 
   RCTRootView *rootView = [[RCTRootView alloc] initWithBundleURL:jsCodeLocation
                                                       moduleName:@"MemoryMagicProject"
@@ -67,12 +70,20 @@
   [RCTPushNotificationManager didRegisterUserNotificationSettings: notificationSettings];
 }
 
--(void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
-  [RCTPushNotificationManager didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
-}
+//-(void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
+//  [RCTPushNotificationManager didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
+//}
 -(void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
   [RCTPushNotificationManager didReceiveRemoteNotification:userInfo];
 }
 
+- (void)application:(UIApplication *)application performActionForShortcutItem:(UIApplicationShortcutItem *)shortcutItem completionHandler:(void (^)(BOOL))completionHandler {
+//  if ([shortcutItem.type  isEqual: @"com.yangcun.memorymagic.addtask"]) {
+//    
+//  } else if ([shortcutItem.type isEqual:@"com.yangcun.memorymagic.todaytodo"]) {
+//    
+//  }
+  [RNQuickActionManager onQuickActionPress:shortcutItem completionHandler:completionHandler];
+}
 
 @end

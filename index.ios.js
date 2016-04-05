@@ -4,18 +4,20 @@ var React = require('react-native');
 var SQLite = require('react-native-sqlite');
 var TaskList = require('./source/components/TaskList');
 var AddTask  = require('./source/components/AddTask');
+var TodayTodo  = require('./source/components/TodayTodo');
 //var HelloWrold = require('/HelloWrold');
 var TaskStore = require('./source/stores/TaskStore');
 var ButtonActions = require('./source/actions/ButtonActions');
 var TaskActions = require('./source/actions/TaskActions');
+
 var {
   StyleSheet,
   View,
-  Text,
   Navigator,
   NavigatorIOS,
   Component,
   AsyncStorage,
+  DeviceEventEmitter
 } = React;
 
 var TRACE_KEY = '@AsncStorageFristLaunch:key';
@@ -23,23 +25,49 @@ var TRACE_KEY = '@AsncStorageFristLaunch:key';
 var styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  text: {
-    marginTop: 65
+    backgroundColor: 'gray'
   }
 });
 
-class HelloWrold extends Component {
-  render() {
-    return (<View style={styles.text}>
-      <Text>!@#$%Y^%$#@!SDFDSADSDFDSS</Text>
-      </View>);
-  }
-}
 class MemoryMagicProjectApp extends Component {
 
+
+  handleAction(action) {
+  	if (action && action.type === 'com.yangcun.memorymagic.addtask') {
+      setTimeout(() => {
+        this.refs.nav.push({ 
+          title: '添加任务',
+          component: AddTask,
+          rightButtonTitle: '保存',
+          onRightButtonPress: () => {
+            ButtonActions.click('save');
+          }
+        });
+      }, 10);
+    } else if (action && action.type === 'com.yangcun.memorymagic.todaytodo') {
+      setTimeout(() => {
+        this.refs.nav.push({
+            title: '今日复习任务',
+            component: TodayTodo
+          });
+      }, 10);
+    }
+  }
+
   componentDidMount() {
-    this._loadInitialState().done();
+  	this._loadInitialState().done();
+
+    // cold-launch
+  	var QuickActions = require('react-native-quick-actions');
+  	var action = QuickActions.popInitialAction();
+  	this.handleAction(action);
+
+    // launch 
+  	DeviceEventEmitter.addListener('quickActionShortcut', action => {
+      // pop to root 
+      this.refs.nav.popToTop();
+   		setTimeout(() => this.handleAction(action), 700);
+   	});
   }
 
   async _loadInitialState() {
@@ -66,6 +94,7 @@ class MemoryMagicProjectApp extends Component {
 
   render() {
     return (
+      <View style= {{ flex: 1}}>
       <NavigatorIOS
       ref='nav'
       style={styles.container}
@@ -73,6 +102,7 @@ class MemoryMagicProjectApp extends Component {
         title: '任务列表',
         rightButtonIcon: require('image!NavBarButtonPlus'),
         component: TaskList,
+        
         onRightButtonPress: () => {
           this.refs.nav.push({ 
             title: '添加任务',
@@ -80,17 +110,26 @@ class MemoryMagicProjectApp extends Component {
             rightButtonTitle: '保存',
             onRightButtonPress: () => {
               ButtonActions.click('save');
-              // TaskActions.create(this.state.titleString);
-            },
-            passProps: {
-              onChanged: this._onChange,
-            } });
+            }});
+        },
+
+        leftButtonTitle: '今日复习',
+        onLeftButtonPress: () => {
+          this.refs.nav.push({
+            title: '今日复习任务',
+            component: TodayTodo
+          });
         }
+
+
       }} />
+      <View></View>
+      </View>
       );
   }
 }
 
 React.AppRegistry.registerComponent('MemoryMagicProject', function() {
+ 
   return MemoryMagicProjectApp
 });
