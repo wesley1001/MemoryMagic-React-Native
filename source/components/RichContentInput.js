@@ -40,41 +40,44 @@ class RichContentInput extends Component {
 	propTypes: {
 		dataString: React.propTypes.string,
 		dataDictionary: React.propTypes.any,
-		onTextChange: React.propTypes.func
+		onTextChange: React.propTypes.func,
 	}
 
+	blur() {
+		console.log(this.refs);
+		for (var refKey in this.refs) {
+			var refObj = this.refs[refKey];		
+			refObj.blur && refObj.blur();
+		}
+	}
 
 	render() {
-		var dic = this.props.DataDictionary;
-		// var dic = {
-		// 	'text1': 'Hello world',
-		// 	'text2': '你好，世界'
-		// };
-		
-		// console.log(dic);
-		if (!dic || dic.length === 0) {
-			return <TextInput style={ styles.titleInput } multiline={true} onChange={this._onTextChange.bind(this)} placeholder='输入任务内容' />
+		var dic = this.props.dataDictionary;
+		if (!dic || Object.keys(dic).length === 0) {
+			dic = {
+				'text1': ''
+			};
 		}
-		var rows = [];
+		var bodyComponents = [];
 		for (var key in dic) {
+			console.log('key: ' + key);
 			if (key.indexOf('text') > -1) {
 				var text = dic[key];
-				rows.push(<TextInput key={key} value={text} multiline={true} onChange={this._onTextChange.bind(this)} placeholder='输入任务内容' style={styles.titleInput} />);
+				bodyComponents.push(<TextInput ref={key} key={key} value={text} multiline={true} onChange={this._onTextChange.bind(this, key)} placeholder='输入任务内容' style={styles.titleInput} />);
 			} else if (key.indexOf('img') > -1) {
 				var img = dic[key];
-				rows.push(<Image  />);
+				bodyComponents.push(<Image key={key} source={img} />);
 			}
 		}
-		// return (<tbody>{rows}</tbody>);
 		return(
 			<View style={{flex: 1}}>
-				{rows}
+				{bodyComponents}
 			</View>
 			);
 	}
 
-	_onTextChange(event) {
-		this.props.onTextChange && this.props.onTextChange(event);
+	_onTextChange(key, event) {
+		this.props.onTextChange && this.props.onTextChange(event, key);
 	}
 }
 
