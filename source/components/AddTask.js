@@ -30,6 +30,7 @@ var {
 	Image,
 	TouchableHighlight,
 	Component,
+	AlertIOS
 	// Object
 } = React;
 
@@ -134,6 +135,10 @@ class AddTask extends Component {
 	}
 
 	_onRichContentTextChange(event, key) {
+		this.setState({
+			titleString: event.nativeEvent.text
+		});
+		
 		// console.log('key:');
 		//console.log(key);
 		// console.log('event.nativeEvent:');
@@ -167,12 +172,9 @@ class AddTask extends Component {
 			takePhotoButtonHidden: false,
 			chooseFromLibraryButtonTitle: '从相册选择',
 			chooseFromLibraryButtonHidden: false,
-
-			maxWidth: 100,
-			maxHeight: 100,
-			returnBase64Image: false,
+			returnBase64Image: true,
 			returnIsVertical: false,
-			quality: 0.2,
+			quality: 0.01,
 			allowsEditing: false, 
 		};
 		var imagePicker;
@@ -184,15 +186,16 @@ class AddTask extends Component {
 
 
 		imagePicker(options, (response) => {
-
-			var source;
-			if (response.data) { // New photo taken OR passed returnBase64Image true -  response is the 64 bit encoded image data string
-				source = {uri: 'data:image/jpeg;base64,' + response.data, isStatic: true};
+			if (response.didCancel) {
+				console.log('User cancelled image picker');
+				return;
+			} else if (response.error) {
+				console.log('ImagePickerManager Error: ' + response.error);
+				return;
 			}
-			else if (response.uri) { // Selected from library - response is the URI to the local file asset
-				source = {uri: response.uri.replace('file://', ''), isStatic: true};
-			}
-
+			console.log(response);
+			var source = {uri: response.uri.replace('file://', ''), isStatic: true, width: response.width, height: response.height};
+			// var source = {uri: 'data:image/jpeg;base64,' + response.data, isStatic: true};
 			var tempDataDictionary = Object.assign({}, this.state.dataDictionary);
 			let key = 'img-' + guid();
 			tempDataDictionary[key] = source;
@@ -211,6 +214,11 @@ class AddTask extends Component {
 	_onSaveButtonPressed(event) {
 		console.log('onSaveButtonPressed ' + i);
 		i += 1;
+		if (!this.state.titleString && this.state.titleString === '') {
+			this.setState({
+				titleString: '默认任务'
+			});
+		}
 		TaskActions.create(this.state.titleString);
 		this.props.navigator.pop();
 	}
