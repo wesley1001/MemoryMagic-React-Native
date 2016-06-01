@@ -38,16 +38,21 @@ class CustomImage extends Component {
 	propTypes: {
 		customKey: React.propTypes.string,
 		source: React.propTypes.any,
-		onRemoveButtonPress: React.propTypes.func
+		onRemoveButtonPress: React.propTypes.func,
+		hiddenRemoveButton: React.propTypes.bool
 	}
 
 	render() {
 		let width = Dimensions.get('window').width - 30;
 		let height = width * this.props.source.height / this.props.source.width;
+		console.log(this.props.source);
+		if (!this.props.source || !this.props.source.uri) {
+			return null;
+		}
 		return (
 			<View>
 				<Image ref='img' key={this.props.customKey} style={[styles.image, {width: width, height: height}]} source={this.props.source}>
-				<RemoveButton onRemoveButtonPress={this._onRemoveButtonPress.bind(this)} />
+				<RemoveButton hidden={this.props.hiddenRemoveButton} onRemoveButtonPress={this._onRemoveButtonPress.bind(this)} />
 				</Image>
 			</View>
 			);

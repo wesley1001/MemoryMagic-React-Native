@@ -10,7 +10,8 @@ import RemoveButton from './RemoveButton';
 
 var styles = StyleSheet.create({
   link: {
-    color: '#32bec3'
+    color: '#32bec3',
+    marginTop: 3
   }
 });
 class OpenURLButton extends Component {
@@ -35,16 +36,19 @@ class OpenURLButton extends Component {
   }
 
   render() {
+    if (!this.props.url) {
+      return null;
+    }
     return (
     	<View style={{flexDirection: 'row', marginTop: 15, marginLeft: 15, marginRight: 15}}>
 	      	<TouchableHighlight
 	      		underlayColor='transparent'
 	        	onPress={this.handleClick.bind(this)}>
   		      <View>
-  		      	<Text style={styles.link}>{this.props.url}</Text>
+  		      	<Text style={styles.link}>链接</Text>
   		      </View>
 	      	</TouchableHighlight>
-	      	<RemoveButton onRemoveButtonPress={this._onRemoveButtonPress.bind(this)}  />
+	      	<RemoveButton hidden={this.props.hiddenRemoveButton} onRemoveButtonPress={this._onRemoveButtonPress.bind(this)}  />
 		</View>
     );
   }
